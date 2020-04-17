@@ -21,7 +21,7 @@
 	</head>
 	<body>
 		<div class="container">
-			<div class="jumbotron text-center hell">
+			<div class="text-center hell">
 				<h1 class="display-3">¡Infierno de dados!</h1>
 			</div>		
 			<div class="row">
@@ -62,6 +62,16 @@
 				<div class="col-md-4">
 				</div>				
 			</div>
+			<div class="row total-container">
+				<div class="col-md-4">
+				</div>			
+				<div class="col-md-4">
+					<label for="total"><b>Total por resultado:</b></label>
+					<span id="group"></span>
+				</div>		
+				<div class="col-md-4">
+				</div>
+			</div>
 			<div class="row text-center" id="throwContainer">
 								
 			</div>
@@ -74,22 +84,37 @@
 				function showThrow($throw) {
 					var $throwContainer = document.getElementById('throwContainer'),
 					$total = document.getElementById('total'),
-					$totalInt = 0;
+					$groupContainter = document.getElementById('group'),
+					$groupArray = [],
+					$totalInt = 0,
+					$textGroup = '';
 					//no me gusta usar variables globales en un funcion, pero...
 					$roll.disabled = true;
 					$roll.classList.remove("btn-primary");
 					$roll.classList.add("btn-secondary");
+					//
 					$throwContainer.innerHTML = '';
 					$total.value = 0;
-					
+					$groupContainter.innerHTML = '';
 					for (var i = 0; i < $throw.length; i++) {
 						$throwContainer.innerHTML = $throwContainer.innerHTML + '<div class="col-md-2"><div class="card"><h4>'+$throw[i]+'</h4></div></div>';	
-						$totalInt += $throw[i];						
+						$totalInt += $throw[i];	
+						if (typeof $groupArray[$throw[i]] === 'undefined') {
+							$groupArray[$throw[i]] = 1;
+						}
+						else {
+							$groupArray[$throw[i]] = $groupArray[$throw[i]] + 1;
+						}
 					}
 					$total.value = $totalInt;
 					$roll.classList.remove("btn-secondary");
 					$roll.classList.add("btn-primary");	
-					$roll.disabled = false;					
+					$roll.disabled = false;
+					
+					for (var index in $groupArray) {
+						$textGroup += index+':'+$groupArray[index]+'-';
+					}
+					$groupContainter.innerHTML = '{'+$textGroup.substring(0,$textGroup.length-1)+'}';				
 				}
 				function rollDices() {
 					var $diceSelect = document.getElementById('diceType'),
