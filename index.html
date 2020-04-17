@@ -48,6 +48,10 @@
 						<label for="diceNumber">N&uacute;mero de dados</label>
 						<input type="number" class="form-control" id="diceNumber" placeholder="N&uacute;mero de dados" min="1" max="256">
 					</div>
+					<div class="form-group">
+						<label for="">Modificaci&oacute;n a la tirada</label>
+						<input type="number" class="form-control" id="totalModification" placeholder="Modificaci&oacute;n a la tirada" value="0">
+					</div>					
 					<button type="submit" class="btn btn-primary" id="roll">Lanzar</button>
 				</div>
 				<div class="col-md-4">
@@ -86,6 +90,7 @@
 					var $throwContainer = document.getElementById('throwContainer'),
 					$total = document.getElementById('total'),
 					$groupContainter = document.getElementById('group'),
+					$totalModification = parseInt(document.getElementById('totalModification').value),
 					$groupArray = [],
 					$totalInt = 0,
 					$textGroup = '';
@@ -107,7 +112,7 @@
 							$groupArray[$throw[i]] = $groupArray[$throw[i]] + 1;
 						}
 					}
-					$total.value = $totalInt;
+					$total.value = $totalInt + $totalModification;
 					$roll.classList.remove("btn-secondary");
 					$roll.classList.add("btn-primary");	
 					$roll.disabled = false;
