@@ -112,7 +112,9 @@
 							$groupArray[$throw[i]] = $groupArray[$throw[i]] + 1;
 						}
 					}
+					if (isNaN($totalModification)) $totalModification = 0;
 					$total.value = $totalInt + $totalModification;
+					//otra vez modificando variables globales, para un futuro tal vez hacerlo una clase
 					$roll.classList.remove("btn-secondary");
 					$roll.classList.add("btn-primary");	
 					$roll.disabled = false;
