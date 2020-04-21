@@ -1,2 +1,2 @@
 # Dice Hell
-Simple random numbers generator for dice roll in javascript.
+Simple random numbers generator for dice rolling in javascript.
