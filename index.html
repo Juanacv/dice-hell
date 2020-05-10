@@ -86,23 +86,45 @@
 			(function() {
 
 				var $roll = document.getElementById('roll');
-				
-				function showThrow($throw) {
-					var $throwContainer = document.getElementById('throwContainer'),
-					$total = document.getElementById('total'),
-					$groupContainter = document.getElementById('group'),
-					$totalModification = parseInt(document.getElementById('totalModification').value),
-					$groupArray = [],
-					$totalInt = 0,
-					$textGroup = '';
+				function _disableButton() {
 					//no me gusta usar variables globales en un funcion, pero...
 					$roll.disabled = true;
 					$roll.classList.remove("btn-primary");
 					$roll.classList.add("btn-secondary");
-					//fin
+					//fin				
+				}
+				function _enableButton() {
+					//otra vez modificando variables globales, para un futuro tal vez hacerlo una clase
+					$roll.classList.remove("btn-secondary");
+					$roll.classList.add("btn-primary");	
+					$roll.disabled = false;
+					//fin				
+				}
+				function _showResultGrouped($groupArray) {
+					$groupContainter = document.getElementById('group');
+					$groupContainter.innerHTML = '';
+					for (var index in $groupArray) {
+						$textGroup += index+':'+$groupArray[index]+'-';
+					}
+					$groupContainter.innerHTML = '{'+$textGroup.substring(0,$textGroup.length-1)+'}';						
+				}
+				function _applyModification($totalInt) {
+					$totalModification = parseInt(document.getElementById('totalModification').value);
+					if (isNaN($totalModification)) $totalModification = 0;
+					return $totalInt + $totalModification;
+				}
+				function showThrow($throw) {
+					var $throwContainer = document.getElementById('throwContainer'),
+					$total = document.getElementById('total'),
+					$groupArray = [],
+					$totalInt = 0,
+					$textGroup = '';
+					
 					$throwContainer.innerHTML = '';
 					$total.value = 0;
-					$groupContainter.innerHTML = '';
+					
+					_disableButton();
+					
 					for (var i = 0; i < $throw.length; i++) {
 						$throwContainer.innerHTML = $throwContainer.innerHTML + '<div class="col-md-2"><div class="card"><h4>'+$throw[i]+'</h4></div></div>';	
 						$totalInt += $throw[i];	
@@ -113,17 +135,10 @@
 							$groupArray[$throw[i]] = $groupArray[$throw[i]] + 1;
 						}
 					}
-					if (isNaN($totalModification)) $totalModification = 0;
-					$total.value = $totalInt + $totalModification;
-					//otra vez modificando variables globales, para un futuro tal vez hacerlo una clase
-					$roll.classList.remove("btn-secondary");
-					$roll.classList.add("btn-primary");	
-					$roll.disabled = false;
 					
-					for (var index in $groupArray) {
-						$textGroup += index+':'+$groupArray[index]+'-';
-					}
-					$groupContainter.innerHTML = '{'+$textGroup.substring(0,$textGroup.length-1)+'}';				
+					$total.value = _applyModification($totalInt);
+					_enableButton();
+					_showResultGrouped($groupArray);
 				}
 				function rollDices() {
 					var $diceSelect = document.getElementById('diceType'),
