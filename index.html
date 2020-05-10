@@ -85,16 +85,20 @@
 		<script type="text/javascript">
 			(function() {
 
-				
-				function _disableButton($roll) {
+				var $roll = document.getElementById('roll');
+				function _disableButton() {
+					//no me gusta usar variables globales en un funcion, pero...
 					$roll.disabled = true;
 					$roll.classList.remove("btn-primary");
-					$roll.classList.add("btn-secondary");			
+					$roll.classList.add("btn-secondary");
+					//fin				
 				}
-				function _enableButton($roll) {
+				function _enableButton() {
+					//otra vez modificando variables globales, para un futuro tal vez convertir el código en una clase
 					$roll.classList.remove("btn-secondary");
 					$roll.classList.add("btn-primary");	
-					$roll.disabled = false;			
+					$roll.disabled = false;
+					//fin				
 				}
 				function _showResultGrouped($groupArray) {
 					$groupContainter = document.getElementById('group'),
@@ -114,13 +118,12 @@
 					var $throwContainer = document.getElementById('throwContainer'),
 					$total = document.getElementById('total'),
 					$groupArray = [],
-					$totalInt = 0,
-					$roll = document.getElementById('roll');;
+					$totalInt = 0;
 					
 					$throwContainer.innerHTML = '';
 					$total.value = 0;
 					
-					_disableButton($roll);
+					_disableButton();
 					
 					for (var i = 0; i < $throw.length; i++) {
 						$throwContainer.innerHTML = $throwContainer.innerHTML + '<div class="col-md-2"><div class="card"><h4>'+$throw[i]+'</h4></div></div>';	
@@ -134,7 +137,7 @@
 					}
 					
 					$total.value = _applyModification($totalInt);
-					_enableButton($roll);
+					_enableButton();
 					_showResultGrouped($groupArray);
 				}
 				function rollDices() {
