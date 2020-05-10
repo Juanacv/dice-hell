@@ -101,7 +101,8 @@
 					//fin				
 				}
 				function _showResultGrouped($groupArray) {
-					$groupContainter = document.getElementById('group');
+					$groupContainter = document.getElementById('group'),
+					$textGroup = '';
 					$groupContainter.innerHTML = '';
 					for (var index in $groupArray) {
 						$textGroup += index+':'+$groupArray[index]+'-';
@@ -117,8 +118,7 @@
 					var $throwContainer = document.getElementById('throwContainer'),
 					$total = document.getElementById('total'),
 					$groupArray = [],
-					$totalInt = 0,
-					$textGroup = '';
+					$totalInt = 0;
 					
 					$throwContainer.innerHTML = '';
 					$total.value = 0;
