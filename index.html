@@ -87,7 +87,7 @@
 
 				var $roll = document.getElementById('roll');
 				function _disableButton() {
-					//no me gusta usar variables globales en un funcion, pero...
+					//no me gusta usar variables globales en una funcion, pero...
 					$roll.disabled = true;
 					$roll.classList.remove("btn-primary");
 					$roll.classList.add("btn-secondary");
@@ -101,6 +101,7 @@
 					//fin				
 				}
 				function _showResultGrouped($groupArray) {
+					//muestra el resultado agrupado por valores
 					$groupContainter = document.getElementById('group'),
 					$textGroup = '';
 					$groupContainter.innerHTML = '';
@@ -114,6 +115,19 @@
 					if (isNaN($totalModification)) $totalModification = 0;
 					return $totalInt + $totalModification;
 				}
+				function _paintHTML($throwContainer, $singleThrow) {
+					$throwContainer.innerHTML = $throwContainer.innerHTML + '<div class="col-md-2"><div class="card"><h4>'+$singleThrow+'</h4></div></div>';	
+				}
+				function _groupingArray($groupArray,$singleThrow) {
+					//agrupa los resultados en un array
+					if (typeof $groupArray[$singleThrow] === 'undefined') {
+						$groupArray[$singleThrow] = 1;
+					}
+					else {
+						$groupArray[$singleThrow] = $groupArray[$singleThrow] + 1;
+					}	
+					return $groupArray;					
+				}
 				function showThrow($throw) {
 					var $throwContainer = document.getElementById('throwContainer'),
 					$total = document.getElementById('total'),
@@ -126,14 +140,9 @@
 					_disableButton();
 					
 					for (var i = 0; i < $throw.length; i++) {
-						$throwContainer.innerHTML = $throwContainer.innerHTML + '<div class="col-md-2"><div class="card"><h4>'+$throw[i]+'</h4></div></div>';	
+						_paintHTML($throwContainer, $throw[i]);
 						$totalInt += $throw[i];	
-						if (typeof $groupArray[$throw[i]] === 'undefined') {
-							$groupArray[$throw[i]] = 1;
-						}
-						else {
-							$groupArray[$throw[i]] = $groupArray[$throw[i]] + 1;
-						}
+						$groupArray = _groupingArray($groupArray,$throw[i]);
 					}
 					
 					$total.value = _applyModification($totalInt);
