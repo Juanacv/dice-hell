@@ -106,7 +106,7 @@
 					$textGroup = '';
 					$groupContainter.innerHTML = '';
 					for (var index in $groupArray) {
-						$textGroup += index+':'+$groupArray[index]+'-';
+						$textGroup += $groupArray[index]+':['+index+']-';
 					}
 					$groupContainter.innerHTML = '{'+$textGroup.substring(0,$textGroup.length-1)+'}';	
 					//fin					
