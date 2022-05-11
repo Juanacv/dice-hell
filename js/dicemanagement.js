@@ -1,5 +1,6 @@
 (function() {
 	var $roll = document.getElementById('roll');
+	var $clean = document.getElementById('clean');
 	function _disableButton() {
 		//no me gusta usar variables globales en una funcion, pero...
 		$roll.disabled = true;
@@ -14,11 +15,9 @@
 		$roll.disabled = false;
 		//fin				
 	}
-	function _showResultGrouped($groupArray, $invalidDicesArr) {
+	function _showResultGrouped($groupArray, $invalidDicesArr, $storage) {
 		//muestra el resultado agrupado por valores
-		$groupContainter = document.getElementById('group'),
 		$textGroup = '';
-		$groupContainter.innerHTML = '';
 		for (var index in $groupArray) {
 			$class = "text-success"; //pinta los dados si son válidos o inválidos
 			if ($invalidDicesArr.includes(parseInt(index))) {
@@ -26,7 +25,8 @@
 			}
 			$textGroup += '<span class="'+$class+'">'+ $groupArray[index]+':['+index+']'+'</span>'+'-';
 		}
-		$groupContainter.innerHTML = '{'+$textGroup.substring(0,$textGroup.length-1)+'}';	
+		var $throwHTML = '{'+$textGroup.substring(0,$textGroup.length-1)+'}';	
+		_storageThrow($throwHTML,$storage);
 		//fin					
 	}
 	function _applyModification($totalInt) {
@@ -35,7 +35,7 @@
 		return $totalInt + $totalModification;
 	}
 	function _paintHTML($throwContainer, $singleThrow) {
-		$throwContainer.innerHTML = $throwContainer.innerHTML + '<div class="col-md-1"><div class="card"><h4>'+$singleThrow+'</h4></div></div>';	
+		$throwContainer.innerHTML = $throwContainer.innerHTML + '<div class="col-md-1"><div class="card"><h5>'+$singleThrow+'</h5></div></div>';	
 	}
 	function _groupingArray($groupArray,$singleThrow) {
 		//agrupa los resultados en un array
@@ -47,14 +47,12 @@
 		}	
 		return $groupArray;					
 	}
-	function showThrow($throw, $invalidDicesArr) {
+	function _showThrow($throw, $invalidDicesArr) {
 		var $throwContainer = document.getElementById('throwContainer'),
-		$total = document.getElementById('total'),
 		$groupArray = [],
 		$totalInt = 0;
 		
 		$throwContainer.innerHTML = '';
-		$total.value = 0;
 		
 		_disableButton();
 		
@@ -62,13 +60,14 @@
 			_paintHTML($throwContainer, $throw[i]);
 			if (!$invalidDicesArr.includes($throw[i])) {
 				$totalInt += $throw[i];	
-			}						
+			}			
 			$groupArray = _groupingArray($groupArray,$throw[i]);
 		}
-		
-		$total.value = _applyModification($totalInt);
-		_enableButton();
-		_showResultGrouped($groupArray, $invalidDicesArr);
+		$totalInt = _applyModification($totalInt);	
+		$storage = document.getElementById("storage").checked;
+		_storageTotal($totalInt, $storage);
+		_showResultGrouped($groupArray, $invalidDicesArr, $storage);
+		_enableButton();		
 	}
 	//Separa y parse los dados inválidos para la tirada
 	function _splitAndParse($invalidDices, $diceType) {
@@ -99,13 +98,67 @@
 			for (var i = 0; i < $diceNumber; i++) {
 				$throw.push(Math.floor(Math.random() * $diceType) + 1);
 			}
-			showThrow($throw, $invalidDicesArr);
+			_showThrow($throw, $invalidDicesArr);
 		}
 		else {
 			alert("Inserte un número de dados igual o inferior a 256");
 		}		
 	}
-	
+	function _paintTotal($storedTotals) {
+		var $totalInt = 0,
+		$total = document.getElementById('total');
+		$total.value = $totalInt;
+		for (var i = 0; i < $storedTotals.length; i++) {
+			$totalInt += $storedTotals[i];
+		}
+		$total.value = $totalInt;
+	}
+	function _paintStoredDices($storedDices) {
+		clearThrows();
+		$firstColumn = document.getElementById("throws-10");
+		$secondColumn = document.getElementById("throws-20");
+		for (var i = 0; i < $storedDices.length; i++) {
+			if (i < 10) $firstColumn.innerHTML += '<p class="throw-storaged">'+$storedDices[i]+'</p>';
+			if (i >= 10) $secondColumn.innerHTML += '<p class="throw-storaged">'+$storedDices[i]+'</p>';
+		}
+	}	
+	function _storageTotal($total, $storage = false) {
+		var $storedTotals = JSON.parse(localStorage.getItem("storedTotals"));
+		if ($storedTotals === null) $storedTotals = [];			
+		if ($storage) { 
+			if ($storedTotals.length === 20) $storedTotals.shift();	
+			$storedTotals.push($total);		
+		}
+		else {
+			$storedTotals = [$total];
+		}
+		_paintTotal($storedTotals);	
+		if ($storage) localStorage.setItem("storedTotals",JSON.stringify($storedTotals));	
+	}
+	function _storageThrow($dices, $storage = false) {
+		var $storedDices = JSON.parse(localStorage.getItem("storedDices"));
+		if ($storedDices === null) $storedDices = [];	
+		if ($storage) { 
+			if ($storedDices.length === 20) $storedDices.shift();
+			$storedDices.push($dices);		
+		}
+		else {
+			$storedDices = [$dices];
+		}		
+		_paintStoredDices($storedDices);
+		if ($storage) localStorage.setItem("storedDices",JSON.stringify($storedDices));
+	}
+	function clearThrows($storedDices) {
+		$firstColumn = document.getElementById("throws-10");
+		$secondColumn = document.getElementById("throws-20");
+		$firstColumn.innerHTML = "";
+		$secondColumn.innerHTML = "";
+	}
+	function cleanStoragedThrows() {
+		clearThrows();
+		localStorage.clear();
+		window.location.reload();
+	}
 	$roll.addEventListener('click', rollDices);
-	
+	$clean.addEventListener('click', cleanStoragedThrows);
 })();
