@@ -2,8 +2,8 @@
 	var $roll = document.getElementById('roll');
 	var $clean = document.getElementById('clean');
 	const MAXDICES = 256;
-	const MAXRAND = 20;
-	const MINRAND = 2;
+	const MAXRAND = 50;
+	const MINRAND = 10;
 	function _disableButton() {
 		//no me gusta usar variables globales en una funcion, pero...
 		$roll.disabled = true;
@@ -86,7 +86,7 @@
 	}
 	function _randomNumberGenerator($diceType) {
 		$multiplier = 0;
-		while ($multiplier < 2) {
+		while ($multiplier < MINRAND) {
 			$multiplier = Math.round(Math.floor(Date.now() / 1000)) % (Math.floor(Math.random() * MAXRAND) + MINRAND);
 		}
 		$maxRandomNumber = MAXDICES * $multiplier;
@@ -102,7 +102,7 @@
 		while ($throw.length < $diceNumber) {
 			$index = Math.floor(Math.random() * ($randomNumbers.length-1));
 			if (!$indexes.includes()) {
-				$throw.push($randomNumbers[$index]);
+				if ((Math.floor(Math.random() * MAXRAND) + MINRAND) % 2 === 0) $throw.push($randomNumbers[$index]);
 				$indexes.push($index);
 			}
 		}
