@@ -1,6 +1,9 @@
 (function() {
 	var $roll = document.getElementById('roll');
 	var $clean = document.getElementById('clean');
+	const MAXDICES = 256;
+	const MAXRAND = 20;
+	const MINRAND = 2;
 	function _disableButton() {
 		//no me gusta usar variables globales en una funcion, pero...
 		$roll.disabled = true;
@@ -81,7 +84,33 @@
 		}
 		return $filteredDices;
 	}
+	function _randomNumberGenerator($diceType) {
+		$multiplier = 0;
+		while ($multiplier < 2) {
+			$multiplier = Math.round(Math.floor(Date.now() / 1000)) % (Math.floor(Math.random() * MAXRAND) + MINRAND);
+		}
+		$maxRandomNumber = MAXDICES * $multiplier;
+		$randomNumbers = [];
+		for (var i = 0; i < $maxRandomNumber; i++) {
+			$randomNumbers.push(Math.floor(Math.random() * $diceType) + 1);
+		}
+		return $randomNumbers;
+	}
+	function _randomPicker($diceNumber, $randomNumbers) {
+		$throw = [];
+		$indexes = [];
+		while ($throw.length < $diceNumber) {
+			$index = Math.floor(Math.random() * ($randomNumbers.length-1));
+			if (!$indexes.includes()) {
+				$throw.push($randomNumbers[$index]);
+				$indexes.push($index);
+			}
+		}
+		return $throw;
+	
+	}
 	function rollDices() {
+		
 		var $diceSelect = document.getElementById('diceType'),
 		$diceInput = document.getElementById('diceNumber'),
 		$invalidDices = document.getElementById('invalidDices').value,
@@ -93,15 +122,13 @@
 		var $diceNumber = parseInt($diceInput.value,10);
 
 		
-		if (!isNaN($diceNumber) && !isNaN($diceType) && ($diceNumber >= 1 && $diceNumber <= 256)) {	
+		if (!isNaN($diceNumber) && !isNaN($diceType) && ($diceNumber >= 1 && $diceNumber <= MAXDICES)) {	
 			$invalidDicesArr = _splitAndParse($invalidDices, $diceType);
-			for (var i = 0; i < $diceNumber; i++) {
-				$throw.push(Math.floor(Math.random() * $diceType) + 1);
-			}
+			$throw = _randomPicker($diceNumber,_randomNumberGenerator($diceType));
 			_showThrow($throw, $invalidDicesArr);
 		}
 		else {
-			alert("Número de dados entre 1 y 256");
+			alert("Número de dados entre 1 y " + MAXDICES);
 		}		
 	}
 	function _paintTotal($storedTotals) {
