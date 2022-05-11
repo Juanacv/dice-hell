@@ -18,7 +18,7 @@
 		$roll.disabled = false;
 		//fin				
 	}
-	function _showResultGrouped($groupArray, $invalidDicesArr, $storage) {
+	function _showResultGrouped($groupArray, $invalidDicesArr, $storage, $explosiveDicesArr) {
 		//muestra el resultado agrupado por valores
 		$textGroup = '';
 		for (var index in $groupArray) {
@@ -26,6 +26,9 @@
 			if ($invalidDicesArr.includes(parseInt(index))) {
 				$class = "text-danger";
 			}
+			if ($explosiveDicesArr.includes(parseInt(index))) {
+				$class = "text-warning";
+			}			
 			$textGroup += '<span class="'+$class+'">'+ $groupArray[index]+':['+index+']'+'</span>'+'-';
 		}
 		var $throwHTML = '{'+$textGroup.substring(0,$textGroup.length-1)+'}';	
@@ -50,7 +53,7 @@
 		}	
 		return $groupArray;					
 	}
-	function _showThrow($throw, $invalidDicesArr) {
+	function _showThrow($throw, $invalidDicesArr, $explosiveDicesArr) {
 		var $throwContainer = document.getElementById('throwContainer'),
 		$groupArray = [],
 		$totalInt = 0;
@@ -69,17 +72,17 @@
 		$totalInt = _applyModification($totalInt);	
 		$storage = document.getElementById("storage").checked;
 		_storageTotal($totalInt, $storage);
-		_showResultGrouped($groupArray, $invalidDicesArr, $storage);
+		_showResultGrouped($groupArray, $invalidDicesArr, $storage, $explosiveDicesArr);
 		_enableButton();		
 	}
 	//Separa y parse los dados inválidos para la tirada
-	function _splitAndParse($invalidDices, $diceType) {
-		var $invalidDicesArr = $invalidDices.split(","),
+	function _splitAndParse($dicesArr, $diceType, $invalidDicesArr = []) {
+		var $dicesArr = $dicesArr.split(","),
 		$filteredDices = [];
-		for (var i = 0; i < $invalidDicesArr.length; i++) {
-			$invalidDice = parseInt($invalidDicesArr[i]);
-			if (!isNaN($invalidDice) && $invalidDice >= 1 && $invalidDice <= $diceType) {
-				$filteredDices.push($invalidDice);
+		for (var i = 0; i < $dicesArr.length; i++) {
+			$dice = parseInt($dicesArr[i]);
+			if (!isNaN($dice) && ($dice >= 1 && $dice <= $diceType) && !$invalidDicesArr.includes($dice))  {
+				$filteredDices.push($dice);
 			}
 		}
 		return $filteredDices;
@@ -114,7 +117,9 @@
 		var $diceSelect = document.getElementById('diceType'),
 		$diceInput = document.getElementById('diceNumber'),
 		$invalidDices = document.getElementById('invalidDices').value,
+		$explosiveDices = document.getElementById('explosiveDices').value,
 		$invalidDicesArr = [],
+		$explosiveDicesArr = [],
 		$throw = [];
 		
 		var $diceType = parseInt($diceSelect.options[$diceSelect.selectedIndex].value,10);
@@ -124,8 +129,9 @@
 		
 		if (!isNaN($diceNumber) && !isNaN($diceType) && ($diceNumber >= 1 && $diceNumber <= MAXDICES)) {	
 			$invalidDicesArr = _splitAndParse($invalidDices, $diceType);
+			$explosiveDicesArr = _splitAndParse($explosiveDices, $diceType, $invalidDicesArr);
 			$throw = _randomPicker($diceNumber,_randomNumberGenerator($diceType));
-			_showThrow($throw, $invalidDicesArr);
+			_showThrow($throw, $invalidDicesArr, $explosiveDicesArr);
 		}
 		else {
 			alert("Número de dados entre 1 y " + MAXDICES);
