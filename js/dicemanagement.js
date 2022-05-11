@@ -20,7 +20,7 @@
 		$textGroup = '';
 		$groupContainter.innerHTML = '';
 		for (var index in $groupArray) {
-			$class = "text-success";
+			$class = "text-success"; //pinta los dados si son válidos o inválidos
 			if ($invalidDicesArr.includes(parseInt(index))) {
 				$class = "text-danger";
 			}
@@ -70,6 +70,7 @@
 		_enableButton();
 		_showResultGrouped($groupArray, $invalidDicesArr);
 	}
+	//Separa y parse los dados inválidos para la tirada
 	function _splitAndParse($invalidDices, $diceType) {
 		var $invalidDicesArr = $invalidDices.split(","),
 		$filteredDices = [];
