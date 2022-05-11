@@ -1,9 +1,21 @@
 (function() {
 	var $roll = document.getElementById('roll');
-	var $clean = document.getElementById('clean');
+	$clean = document.getElementById('clean'),
+	$firstColumnDiv = document.getElementById("throws-10"),
+	$secondColumnDiv = document.getElementById("throws-20"),
+	$totalInput = document.getElementById('total'),
+	$diceSelect = document.getElementById('diceType'),
+	$totalModificationDiv = document.getElementById('totalModification'),
+	$throwContainer = document.getElementById('throwContainer'),
+	$diceInput = document.getElementById('diceNumber'),
+	$invalidDicesInput = document.getElementById('invalidDices'),
+	$explosiveDicesInput = document.getElementById('explosiveDices'),
+	$storageCheck = document.getElementById("storage");
+	
 	const MAXDICES = 256;
 	const MAXRAND = 50;
 	const MINRAND = 10;
+	const MAXSTORAGE = 20;
 	function _disableButton() {
 		//no me gusta usar variables globales en una funcion, pero...
 		$roll.disabled = true;
@@ -18,17 +30,21 @@
 		$roll.disabled = false;
 		//fin				
 	}
+	function _setClass($invalidDicesArr, $explosiveDicesArr, $index) {
+		$class = "text-success"; //pinta los dados si son válidos o inválidos
+		if ($invalidDicesArr.includes(parseInt($index))) {
+			$class = "text-danger";
+		}
+		if ($explosiveDicesArr.includes(parseInt($index))) {
+			$class = "text-warning";
+		}	
+		return $class;		
+	}
 	function _showResultGrouped($groupArray, $invalidDicesArr, $storage, $explosiveDicesArr) {
 		//muestra el resultado agrupado por valores
 		$textGroup = '';
 		for (var index in $groupArray) {
-			$class = "text-success"; //pinta los dados si son válidos o inválidos
-			if ($invalidDicesArr.includes(parseInt(index))) {
-				$class = "text-danger";
-			}
-			if ($explosiveDicesArr.includes(parseInt(index))) {
-				$class = "text-warning";
-			}			
+			$class = _setClass($invalidDicesArr, $explosiveDicesArr, index);
 			$textGroup += '<span class="'+$class+'">'+ $groupArray[index]+':['+index+']'+'</span>'+'-';
 		}
 		var $throwHTML = '{'+$textGroup.substring(0,$textGroup.length-1)+'}';	
@@ -36,7 +52,7 @@
 		//fin					
 	}
 	function _applyModification($totalInt) {
-		$totalModification = parseInt(document.getElementById('totalModification').value);
+		$totalModification = parseInt($totalModificationDiv.value);
 		if (isNaN($totalModification)) $totalModification = 0;
 		return $totalInt + $totalModification;
 	}
@@ -54,10 +70,8 @@
 		return $groupArray;					
 	}
 	function _showThrow($throw, $invalidDicesArr, $explosiveDicesArr) {
-		var $throwContainer = document.getElementById('throwContainer'),
-		$groupArray = [],
-		$totalInt = 0;
-		
+		var $groupArray = [],
+		$totalInt = 0;		
 		$throwContainer.innerHTML = '';
 		
 		_disableButton();
@@ -70,7 +84,7 @@
 			$groupArray = _groupingArray($groupArray,$throw[i]);
 		}
 		$totalInt = _applyModification($totalInt);	
-		$storage = document.getElementById("storage").checked;
+		$storage = $storageCheck.checked;
 		_storageTotal($totalInt, $storage);
 		_showResultGrouped($groupArray, $invalidDicesArr, $storage, $explosiveDicesArr);
 		_enableButton();		
@@ -105,19 +119,16 @@
 		while ($throw.length < $diceNumber) {
 			$index = Math.floor(Math.random() * ($randomNumbers.length-1));
 			if (!$indexes.includes()) {
-				if ((Math.floor(Math.random() * MAXRAND) + MINRAND) % 2 === 0) $throw.push($randomNumbers[$index]);
+				if ((Math.floor(Math.random() * MAXRAND) + MINRAND) % 2 === 0) $throw.push($randomNumbers[$index]); //extra random
 				$indexes.push($index);
 			}
 		}
 		return $throw;
 	
 	}
-	function rollDices() {
-		
-		var $diceSelect = document.getElementById('diceType'),
-		$diceInput = document.getElementById('diceNumber'),
-		$invalidDices = document.getElementById('invalidDices').value,
-		$explosiveDices = document.getElementById('explosiveDices').value,
+	function rollDices() {		
+		var $invalidDices = $invalidDicesInput.value,
+		$explosiveDices = $explosiveDicesInput.value,
 		$invalidDicesArr = [],
 		$explosiveDicesArr = [],
 		$throw = [];
@@ -138,28 +149,26 @@
 		}		
 	}
 	function _paintTotal($storedTotals) {
-		var $totalInt = 0,
-		$total = document.getElementById('total');
-		$total.value = $totalInt;
+		var $totalInt = 0;
+
+		$totalInput.value = $totalInt;
 		for (var i = 0; i < $storedTotals.length; i++) {
 			$totalInt += $storedTotals[i];
 		}
-		$total.value = $totalInt;
+		$totalInput.value = $totalInt;
 	}
 	function _paintStoredDices($storedDices) {
 		clearThrows();
-		$firstColumn = document.getElementById("throws-10");
-		$secondColumn = document.getElementById("throws-20");
 		for (var i = 0; i < $storedDices.length; i++) {
-			if (i < 10) $firstColumn.innerHTML += '<p class="throw-storaged">'+$storedDices[i]+'</p>';
-			if (i >= 10) $secondColumn.innerHTML += '<p class="throw-storaged">'+$storedDices[i]+'</p>';
+			if (i < 10) $firstColumnDiv.innerHTML += '<p class="throw-storaged">'+$storedDices[i]+'</p>';
+			if (i >= 10) $secondColumnDiv.innerHTML += '<p class="throw-storaged">'+$storedDices[i]+'</p>';
 		}
 	}	
 	function _storageTotal($total, $storage = false) {
 		var $storedTotals = JSON.parse(localStorage.getItem("storedTotals"));
 		if ($storedTotals === null) $storedTotals = [];			
-		if ($storage) { 
-			if ($storedTotals.length === 20) $storedTotals.shift();	
+		if ($storedTotals.length === MAXSTORAGE) $storedTotals.shift();
+		if ($storage) { 			
 			$storedTotals.push($total);		
 		}
 		else {
@@ -171,8 +180,8 @@
 	function _storageThrow($dices, $storage = false) {
 		var $storedDices = JSON.parse(localStorage.getItem("storedDices"));
 		if ($storedDices === null) $storedDices = [];	
-		if ($storage) { 
-			if ($storedDices.length === 20) $storedDices.shift();
+		if ($storedDices.length === MAXSTORAGE) $storedDices.shift();
+		if ($storage) { 			
 			$storedDices.push($dices);		
 		}
 		else {
@@ -182,15 +191,12 @@
 		if ($storage) localStorage.setItem("storedDices",JSON.stringify($storedDices));
 	}
 	function clearThrows($storedDices) {
-		$firstColumn = document.getElementById("throws-10");
-		$secondColumn = document.getElementById("throws-20");
-		$firstColumn.innerHTML = "";
-		$secondColumn.innerHTML = "";
+		$firstColumnDiv.innerHTML = "";
+		$secondColumnDiv.innerHTML = "";
 	}
 	function cleanStoragedThrows() {
 		clearThrows();
 		localStorage.clear();
-		window.location.reload();
 	}
 	$roll.addEventListener('click', rollDices);
 	$clean.addEventListener('click', cleanStoragedThrows);
