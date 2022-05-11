@@ -99,11 +99,11 @@
 			for (var i = 0; i < $diceNumber; i++) {
 				$throw.push(Math.floor(Math.random() * $diceType) + 1);
 			}
+			showThrow($throw, $invalidDicesArr);
 		}
 		else {
 			alert("Inserte un número de dados igual o inferior a 256");
-		}
-		showThrow($throw, $invalidDicesArr);
+		}		
 	}
 	
 	$roll.addEventListener('click', rollDices);
