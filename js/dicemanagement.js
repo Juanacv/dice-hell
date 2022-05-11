@@ -14,13 +14,17 @@
 		$roll.disabled = false;
 		//fin				
 	}
-	function _showResultGrouped($groupArray) {
+	function _showResultGrouped($groupArray, $invalidDicesArr) {
 		//muestra el resultado agrupado por valores
 		$groupContainter = document.getElementById('group'),
 		$textGroup = '';
 		$groupContainter.innerHTML = '';
 		for (var index in $groupArray) {
-			$textGroup += $groupArray[index]+':['+index+']-';
+			$class = "text-success";
+			if ($invalidDicesArr.includes(parseInt(index))) {
+				$class = "text-danger";
+			}
+			$textGroup += '<span class="'+$class+'">'+ $groupArray[index]+':['+index+']'+'</span>'+'-';
 		}
 		$groupContainter.innerHTML = '{'+$textGroup.substring(0,$textGroup.length-1)+'}';	
 		//fin					
@@ -64,7 +68,7 @@
 		
 		$total.value = _applyModification($totalInt);
 		_enableButton();
-		_showResultGrouped($groupArray);
+		_showResultGrouped($groupArray, $invalidDicesArr);
 	}
 	function _splitAndParse($invalidDices, $diceType) {
 		var $invalidDicesArr = $invalidDices.split(","),
