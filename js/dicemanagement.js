@@ -93,7 +93,7 @@
 		var $diceNumber = parseInt($diceInput.value,10);
 
 		
-		if (!isNaN($diceNumber) && !isNaN($diceType) && $diceNumber <= 256) {	
+		if (!isNaN($diceNumber) && !isNaN($diceType) && ($diceNumber >= 1 && $diceNumber <= 256)) {	
 			$invalidDicesArr = _splitAndParse($invalidDices, $diceType);
 			for (var i = 0; i < $diceNumber; i++) {
 				$throw.push(Math.floor(Math.random() * $diceType) + 1);
@@ -101,7 +101,7 @@
 			_showThrow($throw, $invalidDicesArr);
 		}
 		else {
-			alert("Inserte un número de dados igual o inferior a 256");
+			alert("Número de dados entre 1 y 256");
 		}		
 	}
 	function _paintTotal($storedTotals) {
