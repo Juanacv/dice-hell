@@ -35,7 +35,7 @@
 		return $totalInt + $totalModification;
 	}
 	function _paintHTML($throwContainer, $singleThrow) {
-		$throwContainer.innerHTML = $throwContainer.innerHTML + '<div class="col-md-1"><div class="card"><h5>'+$singleThrow+'</h5></div></div>';	
+		$throwContainer.innerHTML = $throwContainer.innerHTML + '<div class="col-md-1 col-sm-1"><div class="card"><h5>'+$singleThrow+'</h5></div></div>';	
 	}
 	function _groupingArray($groupArray,$singleThrow) {
 		//agrupa los resultados en un array
