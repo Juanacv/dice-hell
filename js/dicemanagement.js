@@ -118,7 +118,7 @@
 		$indexes = [];
 		while ($throw.length < $diceNumber) {
 			$index = Math.floor(Math.random() * ($randomNumbers.length-1));
-			if (!$indexes.includes()) {
+			if (!$indexes.includes($index)) {
 				if ((Math.floor(Math.random() * MAXRAND) + MINRAND) % 2 === 0) $throw.push($randomNumbers[$index]); //extra random
 				$indexes.push($index);
 				if ($indexes.length === $randomNumbers.length) $indexes = []; // me aseguro que no es un bucle infinito, reseteo los index
